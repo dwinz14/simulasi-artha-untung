@@ -598,20 +598,6 @@
     </header>
 
     <main class="page-body" role="main">
-      <!-- ── Info Strip ── -->
-      <div class="info-strip" aria-label="Informasi Produk">
-        <div class="info-card">
-          <span class="ic-label">Tenor 3 Bulan</span>
-          <span class="ic-value">3,50%</span>
-          <span class="ic-sub">per annum (p.a.)</span>
-        </div>
-        <div class="info-card">
-          <span class="ic-label">Tenor 6 Bulan</span>
-          <span class="ic-value">3,75%</span>
-          <span class="ic-sub">per annum (p.a.)</span>
-        </div>
-      </div>
-
       <!-- ── Form Card ── -->
       <div class="form-card">
         <h2>Detail Penempatan</h2>
@@ -711,6 +697,14 @@
           <div class="result-section">
             <p class="result-section-label">Komisi Marketing</p>
             <div class="result-row">
+              <span class="rr-label"><span class="dot dot-success" aria-hidden="true"></span>Komisi Kotor Per Bulan</span>
+              <span class="rr-value" id="res-komisi-kotor">—</span>
+            </div>
+            <div class="result-row">
+              <span class="rr-label"><span class="dot dot-success" aria-hidden="true"></span>PPH</span>
+              <span class="rr-value">2,5 %</span>
+            </div>
+            <div class="result-row">
               <span class="rr-label"><span class="dot dot-success" aria-hidden="true"></span>Per Bulan</span>
               <span class="rr-value" id="res-komisi-bulan">—</span>
             </div>
@@ -739,7 +733,7 @@
 
       <!-- ── Footer ── -->
       <footer class="footer" role="contentinfo">
-        <p><strong>Artha Untung</strong> &mdash; Solusi Deposito Terpercaya &copy; 2025</p>
+        <p><strong>Artha Untung</strong> &mdash; BPR Artha Pamenang &copy; 2026</p>
       </footer>
     </main>
 
@@ -796,6 +790,7 @@
         document.getElementById("res-bunga-total").textContent = fmt(bunga_net_total);
         document.getElementById("res-komisi-bulan").textContent = fmt(komisi_net_bulan);
         document.getElementById("res-komisi-total").textContent = fmt(komisi_net_total);
+        document.getElementById("res-komisi-kotor").textContent = fmt(komisi_kotor_bulan);
         // document.getElementById("res-total-penerimaan").textContent = fmt(total_penerimaan);
 
         if (!resultEl.classList.contains("visible")) {
