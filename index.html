@@ -231,7 +231,7 @@
         pointer-events: none;
         user-select: none;
       }
-      input[type="number"] {
+      .input-wrap input[type="text"] {
         width: 100%;
         padding: 13px 14px 13px 46px;
         border: 1.5px solid var(--border);
@@ -245,17 +245,12 @@
         transition:
           border-color var(--transition),
           box-shadow var(--transition);
-        -moz-appearance: textfield;
       }
-      input[type="number"]::-webkit-outer-spin-button,
-      input[type="number"]::-webkit-inner-spin-button {
-        -webkit-appearance: none;
-      }
-      input[type="number"]:focus {
+      .input-wrap input[type="text"]:focus {
         border-color: var(--navy);
         box-shadow: 0 0 0 3px rgba(11, 31, 58, 0.08);
       }
-      input[type="number"].invalid {
+      .input-wrap input[type="text"].invalid {
         border-color: var(--error);
         box-shadow: 0 0 0 3px rgba(184, 50, 50, 0.08);
       }
@@ -596,7 +591,7 @@
         <svg width="13" height="13" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
           <path d="M8 1L10.2 5.5H15L11.4 8.5L12.9 13L8 10.2L3.1 13L4.6 8.5L1 5.5H5.8L8 1Z" fill="#E8B86D" />
         </svg>
-        <span>Artha Pamenang</span>
+        <span>BPR Artha Pamenang</span>
       </div>
       <h1>Simulasi <em>Artha Untung</em></h1>
       <!-- <p>Hitung potensi keuntungan deposito Anda secara instan &amp; transparan</p> -->
@@ -629,7 +624,7 @@
             </label>
             <div class="input-wrap">
               <span class="input-prefix" aria-hidden="true">Rp</span>
-              <input type="number" id="setoran" name="setoran" min="8000000" step="1000000" value="8000000" autocomplete="off" inputmode="numeric" aria-describedby="setoran-hint setoran-error" aria-required="true" />
+              <input type="text" id="setoran" name="setoran" value="8.000.000" autocomplete="off" inputmode="numeric" placeholder="0" aria-describedby="setoran-hint setoran-error" aria-required="true" />
             </div>
             <p id="setoran-hint" class="field-hint">Minimum penempatan Rp 8.000.000</p>
             <p id="setoran-error" class="field-error" role="alert" aria-live="polite">
@@ -663,7 +658,7 @@
           </div>
 
           <!-- Submit -->
-          <button type="submit" class="btn-hitung" id="btnHitung" aria-label="Hitung simulasi deposito">
+          <!-- <button type="submit" class="btn-hitung" id="btnHitung" aria-label="Hitung simulasi deposito">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
               <rect x="3" y="3" width="8" height="8" rx="1.5" stroke="currentColor" stroke-width="1.8" />
               <rect x="13" y="3" width="8" height="8" rx="1.5" stroke="currentColor" stroke-width="1.8" />
@@ -671,7 +666,7 @@
               <path d="M13 17h8M17 13v8" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
             </svg>
             <span>Hitung Simulasi</span>
-          </button>
+          </button> -->
         </form>
       </div>
 
@@ -701,7 +696,7 @@
 
           <!-- Bunga -->
           <div class="result-section">
-            <p class="result-section-label">Bunga</p>
+            <p class="result-section-label">Bunga Nasabah (Net, setelah pajak)</p>
             <div class="result-row">
               <span class="rr-label"><span class="dot dot-gold" aria-hidden="true"></span>Per Bulan</span>
               <span class="rr-value green" id="res-bunga-bulan">—</span>
@@ -714,9 +709,9 @@
 
           <!-- Komisi -->
           <div class="result-section">
-            <p class="result-section-label">Komisi Marketing</p>
+            <p class="result-section-label">Komisi Marketing (Net, setelah potongan)</p>
             <div class="result-row">
-              <span class="rr-label"><span class="dot dot-success" aria-hidden="true"></span>Bersih Per Bulan</span>
+              <span class="rr-label"><span class="dot dot-success" aria-hidden="true"></span>Per Bulan</span>
               <span class="rr-value" id="res-komisi-bulan">—</span>
             </div>
             <div class="result-row">
@@ -727,8 +722,8 @@
 
           <!-- Grand Total -->
           <div class="result-total-row">
-            <span class="rt-label">Hasil Perhitungan</span>
-            <span class="rt-value" id="res-total-penerimaan">—</span>
+            <span class="rt-label">Hasil perhitungan</span>
+            <span class="rt-value" id="res-total-penerimaan">...</span>
           </div>
         </div>
       </section>
@@ -749,64 +744,51 @@
     </main>
 
     <script>
-      const form = document.getElementById("simulasiForm");
-      const inputSet = document.getElementById("setoran");
-      const errMsg = document.getElementById("setoran-error");
-      const result = document.getElementById("result");
-
-      const fmt = (n) => "Rp " + n.toLocaleString("id-ID", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+      /* ─── Helpers ─── */
+      const fmt = (n) => "Rp\u00A0" + n.toLocaleString("id-ID", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
       const fmtRate = (r) => (r * 100).toFixed(2).replace(".", ",") + "% p.a.";
+      const fmtDisp = (n) => n.toLocaleString("id-ID");
 
-      // Live validation on blur
-      inputSet.addEventListener("blur", () => validate());
-      inputSet.addEventListener("input", () => {
-        if (errMsg.classList.contains("visible")) validate();
-      });
+      /* ─── Elements ─── */
+      const form = document.getElementById("simulasiForm");
+      const inputEl = document.getElementById("setoran");
+      const errMsg = document.getElementById("setoran-error");
+      const resultEl = document.getElementById("result");
 
-      function validate() {
-        const val = parseFloat(inputSet.value);
-        if (!val || val < 8000000) {
-          inputSet.classList.add("invalid");
-          errMsg.classList.add("visible");
-          return false;
-        }
-        inputSet.classList.remove("invalid");
-        errMsg.classList.remove("visible");
-        return true;
+      /* ─── State ─── */
+      let rawValue = 8000000;
+      let debouncer = null;
+      const MIN = 8000000;
+
+      /* ─── Validation ─── */
+      function setValid(ok) {
+        inputEl.classList.toggle("invalid", !ok);
+        errMsg.classList.toggle("visible", !ok);
       }
 
-      form.addEventListener("submit", function (e) {
-        e.preventDefault();
-        if (!validate()) {
-          inputSet.focus();
-          return;
-        }
+      /* ─── Calculation & Render ─── */
+      const CONFIG = {
+        3: { hari: 90, bunga_pa: 0.035 },
+        6: { hari: 180, bunga_pa: 0.0375 },
+      };
 
-        const setoran = parseFloat(inputSet.value);
+      function calculate() {
+        if (rawValue < MIN) return;
         const tenor = parseInt(document.querySelector('input[name="tenor"]:checked').value);
+        const { hari, bunga_pa } = CONFIG[tenor];
 
-        const config = {
-          3: { hari: 90, bunga_pa: 0.035 },
-          6: { hari: 180, bunga_pa: 0.0375 },
-        };
-        const { hari, bunga_pa } = config[tenor];
-
-        // Bunga (pajak 20%)
-        const bunga_kotor_total = setoran * bunga_pa * (hari / 365);
+        const bunga_kotor_total = rawValue * bunga_pa * (hari / 365);
         const bunga_net_total = bunga_kotor_total * 0.8;
         const bunga_net_bulan = bunga_net_total / tenor;
 
-        // Komisi (potongan 2.5%)
-        const komisi_kotor_bulan = (setoran * 0.005) / 12;
+        const komisi_kotor_bulan = (rawValue * 0.005) / 12;
         const komisi_net_bulan = komisi_kotor_bulan * 0.975;
         const komisi_net_total = komisi_net_bulan * tenor;
 
-        // Grand total
-        const total_penerimaan = setoran + bunga_net_total;
+        const total_penerimaan = rawValue + bunga_net_total;
 
-        // Populate
         document.getElementById("res-tenor-badge").textContent = tenor + " Bulan";
-        document.getElementById("res-setoran").textContent = fmt(setoran);
+        document.getElementById("res-setoran").textContent = fmt(rawValue);
         document.getElementById("res-rate").textContent = fmtRate(bunga_pa);
         document.getElementById("res-tenor-2").textContent = tenor;
         document.getElementById("res-tenor-3").textContent = tenor;
@@ -816,10 +798,72 @@
         document.getElementById("res-komisi-total").textContent = fmt(komisi_net_total);
         // document.getElementById("res-total-penerimaan").textContent = fmt(total_penerimaan);
 
-        // Reveal with smooth scroll
-        result.classList.add("visible");
-        setTimeout(() => result.scrollIntoView({ behavior: "smooth", block: "nearest" }), 80);
+        if (!resultEl.classList.contains("visible")) {
+          resultEl.classList.add("visible");
+          setTimeout(() => resultEl.scrollIntoView({ behavior: "smooth", block: "nearest" }), 80);
+        }
+      }
+
+      /* ─── Input: live formatting + debounced calc ─── */
+      inputEl.addEventListener("input", function () {
+        const digits = this.value.replace(/\D/g, "");
+        rawValue = parseInt(digits, 10) || 0;
+
+        // Reformat display, keep caret stable
+        const caretFromRight = this.value.length - (this.selectionStart ?? this.value.length);
+        const formatted = rawValue > 0 ? fmtDisp(rawValue) : "";
+        this.value = formatted;
+        try {
+          const pos = Math.max(0, formatted.length - caretFromRight);
+          this.setSelectionRange(pos, pos);
+        } catch (_) {}
+
+        // Only show error if user has typed something invalid (not empty state)
+        setValid(rawValue === 0 || rawValue >= MIN);
+
+        // Debounce: trigger calc 400ms after user stops typing
+        clearTimeout(debouncer);
+        if (rawValue >= MIN) debouncer = setTimeout(calculate, 400);
       });
+
+      // Blur: finalize & immediate calc
+      inputEl.addEventListener("blur", function () {
+        if (rawValue === 0) {
+          this.value = "";
+          setValid(false);
+          return;
+        }
+        this.value = fmtDisp(rawValue);
+        if (rawValue < MIN) {
+          setValid(false);
+          return;
+        }
+        setValid(true);
+        clearTimeout(debouncer);
+        calculate();
+      });
+
+      // Tenor change: recalculate immediately
+      document.querySelectorAll('input[name="tenor"]').forEach((radio) => {
+        radio.addEventListener("change", () => {
+          if (rawValue >= MIN) calculate();
+        });
+      });
+
+      /* ─── Submit: Enter key / button fallback ─── */
+      form.addEventListener("submit", function (e) {
+        e.preventDefault();
+        if (rawValue < MIN) {
+          setValid(false);
+          inputEl.focus();
+          return;
+        }
+        clearTimeout(debouncer);
+        calculate();
+      });
+
+      /* ─── Init: render for default value ─── */
+      calculate();
     </script>
   </body>
 </html>
