@@ -143,11 +143,11 @@
         display: flex;
         flex-direction: column;
         gap: 4px;
-        box-shadow: var(--shadow-sm);
+        box-shadow: var(--shadow-md);
         transition: box-shadow var(--transition);
       }
       .info-card:hover {
-        box-shadow: var(--shadow-md);
+        box-shadow: var(--shadow-lg);
       }
       .info-card .ic-label {
         font-size: 11px;
@@ -739,7 +739,7 @@
 
     <script>
       /* ─── Helpers ─── */
-      const fmt = (n) => "Rp\u00A0" + n.toLocaleString("id-ID", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+      const fmt = (n) => "Rp\u00A0" + Math.trunc(n).toLocaleString("id-ID");
       const fmtRate = (r) => (r * 100).toFixed(2).replace(".", ",") + "% p.a.";
       const fmtDisp = (n) => n.toLocaleString("id-ID");
 
