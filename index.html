@@ -697,16 +697,12 @@
           <div class="result-section">
             <p class="result-section-label">Komisi Marketing</p>
             <div class="result-row">
-              <span class="rr-label"><span class="dot dot-success" aria-hidden="true"></span>Komisi Kotor Per Bulan</span>
-              <span class="rr-value" id="res-komisi-kotor">—</span>
-            </div>
-            <div class="result-row">
               <span class="rr-label"><span class="dot dot-success" aria-hidden="true"></span>PPH</span>
               <span class="rr-value">2,5 %</span>
             </div>
             <div class="result-row">
-              <span class="rr-label"><span class="dot dot-success" aria-hidden="true"></span>Per Bulan</span>
-              <span class="rr-value" id="res-komisi-bulan">—</span>
+              <span class="rr-label"><span class="dot dot-success" aria-hidden="true"></span>Komisi Per Bulan</span>
+              <span class="rr-value" id="res-komisi-kotor">—</span>
             </div>
             <div class="result-row">
               <span class="rr-label"><span class="dot dot-success" aria-hidden="true"></span>Total <span id="res-tenor-3">—</span> Bulan</span>
@@ -776,8 +772,8 @@
         const bunga_net_bulan = bunga_net_total / tenor;
 
         const komisi_kotor_bulan = (rawValue * 0.005) / 12;
-        const komisi_net_bulan = komisi_kotor_bulan * 0.975;
-        const komisi_net_total = komisi_net_bulan * tenor;
+        // const komisi_net_bulan = komisi_kotor_bulan * 0.975;
+        const komisi_net_total = komisi_kotor_bulan * tenor;
 
         const total_penerimaan = rawValue + bunga_net_total;
 
@@ -788,7 +784,7 @@
         document.getElementById("res-tenor-3").textContent = tenor;
         document.getElementById("res-bunga-bulan").textContent = fmt(bunga_net_bulan);
         document.getElementById("res-bunga-total").textContent = fmt(bunga_net_total);
-        document.getElementById("res-komisi-bulan").textContent = fmt(komisi_net_bulan);
+        // document.getElementById("res-komisi-bulan").textContent = fmt(komisi_net_bulan);
         document.getElementById("res-komisi-total").textContent = fmt(komisi_net_total);
         document.getElementById("res-komisi-kotor").textContent = fmt(komisi_kotor_bulan);
         // document.getElementById("res-total-penerimaan").textContent = fmt(total_penerimaan);
