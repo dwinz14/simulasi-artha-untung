@@ -735,7 +735,11 @@
 
     <script>
       /* ─── Helpers ─── */
-      const fmt = (n) => "Rp\u00A0" + Math.trunc(n).toLocaleString("id-ID");
+      const fmt = (n) => {
+        // Kita kurangi sedikit margin error atau langsung potong desimalnya
+        const realValue = Math.floor(Math.round((n + Number.EPSILON) * 100) / 100);
+        return "Rp\u00A0" + realValue.toLocaleString("id-ID");
+      };
       const fmtRate = (r) => (r * 100).toFixed(2).replace(".", ",") + "% p.a.";
       const fmtDisp = (n) => n.toLocaleString("id-ID");
 
@@ -773,9 +777,10 @@
 
         const komisi_kotor_bulan = (rawValue * 0.005) / 12;
         // const komisi_net_bulan = komisi_kotor_bulan * 0.975;
-        const komisi_net_total = komisi_kotor_bulan * tenor;
+        const komisi_kotor_murni = Math.floor(komisi_kotor_bulan);
+        const komisi_net_total = komisi_kotor_murni * tenor;
 
-        const total_penerimaan = rawValue + bunga_net_total;
+        // const total_penerimaan = rawValue + bunga_net_total;
 
         document.getElementById("res-tenor-badge").textContent = tenor + " Bulan";
         document.getElementById("res-setoran").textContent = fmt(rawValue);
